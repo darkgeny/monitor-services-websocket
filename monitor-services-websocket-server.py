@@ -105,7 +105,7 @@ async def broadcast_monitor_services(loop):
             finally:
                 pass
         else:
-            print(f"nessun cambiamento")
+            print(f"nessun cambiamento.")
 
 
 if __name__ == "__main__":
