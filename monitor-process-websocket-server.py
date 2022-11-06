@@ -128,7 +128,7 @@ if __name__ == "__main__":
         socket_server = websockets.serve(handle_socket_connection,
                                          get_process_setting("name", "listenthis", "host"),
                                          get_process_setting("name", "listenthis", "port")
-                                         )
+                        )
         print(f'Started socket server: {socket_server} ...')
         loop.run_until_complete(socket_server)
         loop.run_until_complete(broadcast_monitor_services(loop))
