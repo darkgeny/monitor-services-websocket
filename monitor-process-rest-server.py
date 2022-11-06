@@ -18,18 +18,20 @@ conn = ""
 
 app = Flask(__name__)
 
-tasks = [
-    {
-        'id': 0
-    }
-]
+settings = json.load(open('settings-rest-server.json', 'r'))
 
 
-def hiveconnect():
+def get_process_name_param(paramname, filterby, valueofthis):
+    return list(filter(lambda x: x[paramname] == filterby, settings))[0][valueofthis]
+
+
+def hive_connect():
     global conn, HIVE_DISCONNECTED
-    if HIVE_DISCONNECTED == True:
+    hst = ""
+    if HIVE_DISCONNECTED:
         try:
-            conn = hive.Connection(host="bdata2", auth='NOSASL')
+            hst = get_process_name_param("name", "hive", "host")
+            conn = hive.Connection(host=hst, auth='NOSASL')
         except Exception as e:
             print("Hive connection is dead.")
             print(e)
@@ -40,14 +42,14 @@ def hiveconnect():
     return conn
 
 
-conn = hiveconnect()
+conn = hive_connect()
 
 
 @app.route('/hive', methods=['GET'])
 def get_hive():
     global HIVE_DISCONNECTED
     hivestatus = "reconnecting"
-    hiveconnect()
+    hive_connect()
     try:
         df = pd.read_sql("SELECT * FROM monitor", conn)
     except Exception as e:
@@ -87,8 +89,12 @@ def get_process():
 
 @app.route('/namenode', methods=['GET'])
 def get_namenode():
+    hst = ""
+    pport = ""
     try:
-        response = requests.get("http://bdata1:9870/jmx?qry=Hadoop:service=NameNode,name=NameNodeStatus")
+        hst = get_process_name_param("name", "namenode", "host")
+        pport = get_process_name_param("name", "namenode", "port")
+        response = requests.get("http://" + hst + ":" + pport + "/jmx?qry=Hadoop:service=NameNode,name=NameNodeStatus")
     except requests.exceptions.RequestException as e:
         return jsonify({'namenode': {'status': 'down'}})
     namenode = response.json()
@@ -101,8 +107,12 @@ def get_namenode():
 
 @app.route('/datanodes', methods=['GET'])
 def get_datanodes():
+    hst = ""
+    pport = ""
     try:
-        response = requests.get("http://bdata1:9870/jmx?qry=Hadoop:service=NameNode,name=NameNodeInfo")
+        hst = get_process_name_param("name", "datanodes", "host")
+        pport = get_process_name_param("name", "datanodes", "port")
+        response = requests.get("http://" + hst + ":" + pport + "/jmx?qry=Hadoop:service=NameNode,name=NameNodeInfo")
     except requests.exceptions.RequestException as e:
         return jsonify({"service_name": "datanodes", "status": "down"})
     datanodes = response.json()
@@ -122,8 +132,12 @@ def get_datanodes():
 
 @app.route('/hbase', methods=['GET'])
 def get_hbase():
+    hst = ""
+    pport = ""
     try:
-        response = requests.get("http://bdata4:16010/jmx")
+        hst = get_process_name_param("name", "hbase", "host")
+        pport = get_process_name_param("name", "hbase", "port")
+        response = requests.get("http://" + hst + ":" + pport + "/jmx")
     except requests.exceptions.RequestException as e:
         return jsonify({"service_name": "hbase", "status": "down"})
     hbase = response.json()
@@ -145,9 +159,13 @@ def get_hbase():
 
 @app.route('/kylin', methods=['GET'])
 def get_kylin():
-    url = "http://bdata3:7070/kylin/api/user/authentication"
     header = {"Authorization": "Basic QURNSU46S1lMSU4="}
+    hst = ""
+    pport = ""
     try:
+        hst = get_process_name_param("name", "kylin", "host")
+        pport = get_process_name_param("name", "kylin", "port")
+        url = "http://" + hst + ":" + pport + "/kylin/api/user/authentication"
         response = requests.get(url, headers=header, timeout=5)
         r = response.json()
         if r['userDetails']['username'] == 'ADMIN':
@@ -186,4 +204,7 @@ def connect(url):
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    app.run(
+        host=get_process_name_param("name", "listenthis", "ip"),
+        port=get_process_name_param("name", "listenthis", "port"
+                                    ), debug=True)

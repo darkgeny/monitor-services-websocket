@@ -1,0 +1,38 @@
+[
+  {
+    "name": "listenthis",
+    "host": "restserver",
+    "ip": "0.0.0.0",
+    "port": "5000"
+  },
+  {
+    "name": "hive",
+    "host": "bdata2",
+    "ip": "",
+    "port": "10000"
+  },
+  {
+    "name": "namenode",
+    "host": "bdata1",
+    "ip": "",
+    "port": "9870"
+  },
+  {
+    "name": "datanodes",
+    "host": "bdata1",
+    "ip": "",
+    "port": "9870"
+  },
+  {
+    "name": "hbase",
+    "host": "bdata4",
+    "ip": "",
+    "port": "16010"
+  },
+  {
+    "name": "kylin",
+    "host": "bdata3",
+    "ip": "",
+    "port": "7070"
+  }
+]

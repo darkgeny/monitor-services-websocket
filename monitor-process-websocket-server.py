@@ -13,9 +13,23 @@ ws = ""
 monitor_json = ""
 cmd = "kylin"
 
+settings = json.load(open('settings-websocket-server.json', 'r'))
+
+
+def get_process_setting(paramname, filterby, valueofthis):
+    return list(filter(lambda x: x[paramname] == filterby, settings))[0][valueofthis]
+
+
+def get_url_process(pname):
+    return "http://" \
+           + get_process_setting("name", "restserver", "host") \
+           + ":" \
+           + get_process_setting("name", "restserver", "port") \
+           + "/" + pname
+
 
 async def get_status_all():
-    r = await connect("http://localhost:5000/all")
+    r = await connect(get_url_process("all"))
     return jsonify(r)
 
 
@@ -24,7 +38,7 @@ async def connect(url):
         # response = await requests.get(url)
         response = requests.get(url)
     except requests.exceptions.RequestException as e:
-        return jsonify({'connection': 'failed'+e})
+        return jsonify({'connection': 'failed' + str(e)})
     return response.json()
 
 
@@ -71,7 +85,7 @@ async def broadcast_monitor_services(loop):
             if cmd == "":
                 cmd = "kylin"
             print("cmd:", cmd)
-            url = "http://localhost:5000/" + cmd
+            url = get_url_process("") + cmd
             cmd = "kylin"
             print("url:", url)
             try:
@@ -111,7 +125,10 @@ async def broadcast_monitor_services(loop):
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     try:
-        socket_server = websockets.serve(handle_socket_connection, '0.0.0.0', 7890)
+        socket_server = websockets.serve(handle_socket_connection,
+                                         get_process_setting("name", "listenthis", "host"),
+                                         get_process_setting("name", "listenthis", "port")
+                                         )
         print(f'Started socket server: {socket_server} ...')
         loop.run_until_complete(socket_server)
         loop.run_until_complete(broadcast_monitor_services(loop))
