@@ -12,6 +12,7 @@ import html
 from flask import Flask, jsonify, request
 from flask import FlaskView, route
 
+
 warnings.filterwarnings('ignore')
 
 HIVE_DISCONNECTED = True
