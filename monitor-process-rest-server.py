@@ -10,6 +10,7 @@ import warnings
 from urllib.parse import unquote
 import html
 from flask import Flask, jsonify, request
+from flask import FlaskView, route
 
 warnings.filterwarnings('ignore')
 
@@ -61,6 +62,7 @@ def get_hive():
     try:
         df = pd.read_sql(get_process_setting("name", "hive", "topic"), conn)
     except Exception as e:
+        # for all exceptions see https://github.com/pandas-dev/pandas/blob/main/pandas/errors/__init__.py
         HIVE_DISCONNECTED = True
         return jsonify({"service_name": "hive", "status": "down", "log": hivestatus})
 

@@ -32,7 +32,7 @@
     "host": "bdata4",
     "ip": "",
     "port": "16010",
-    "topic: "/jmx"
+    "topic": "/jmx"
   },
   {
     "name": "kylin",

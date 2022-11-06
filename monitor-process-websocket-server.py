@@ -68,6 +68,7 @@ async def handle_socket_connection(websocket, path):
         print(f"Socket [{id(websocket)}] is live")
     finally:
         websocket_clients.remove(websocket)
+        print(f"Socket [{id(websocket)}] was removed from stack")
     #    pass
 
 
