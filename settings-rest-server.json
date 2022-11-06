@@ -1,7 +1,7 @@
 [
   {
     "name": "listenthis",
-    "host": "restserver",
+    "host": "locahost",
     "ip": "0.0.0.0",
     "port": "5000"
   },
@@ -33,6 +33,8 @@
     "name": "kylin",
     "host": "bdata3",
     "ip": "",
-    "port": "7070"
+    "port": "7070",
+    "user_login": "ADMIN",
+    "basic_authorization" : "QURNSU46S1lMSU4="
   }
 ]

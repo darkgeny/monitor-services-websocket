@@ -21,8 +21,16 @@ app = Flask(__name__)
 settings = json.load(open('settings-rest-server.json', 'r'))
 
 
-def get_process_name_param(paramname, filterby, valueofthis):
+def get_process_setting(paramname, filterby, valueofthis):
     return list(filter(lambda x: x[paramname] == filterby, settings))[0][valueofthis]
+
+
+def get_url_process(pname):
+    return "http://" \
+           + get_process_setting("name", "listenthis", "host") \
+           + ":" \
+           + get_process_setting("name", "listenthis", "port") \
+           + "/" + pname
 
 
 def hive_connect():
@@ -30,7 +38,7 @@ def hive_connect():
     hst = ""
     if HIVE_DISCONNECTED:
         try:
-            hst = get_process_name_param("name", "hive", "host")
+            hst = get_process_setting("name", "hive", "host")
             conn = hive.Connection(host=hst, auth='NOSASL')
         except Exception as e:
             print("Hive connection is dead.")
@@ -92,8 +100,8 @@ def get_namenode():
     hst = ""
     pport = ""
     try:
-        hst = get_process_name_param("name", "namenode", "host")
-        pport = get_process_name_param("name", "namenode", "port")
+        hst = get_process_setting("name", "namenode", "host")
+        pport = get_process_setting("name", "namenode", "port")
         response = requests.get("http://" + hst + ":" + pport + "/jmx?qry=Hadoop:service=NameNode,name=NameNodeStatus")
     except requests.exceptions.RequestException as e:
         return jsonify({'namenode': {'status': 'down'}})
@@ -110,8 +118,8 @@ def get_datanodes():
     hst = ""
     pport = ""
     try:
-        hst = get_process_name_param("name", "datanodes", "host")
-        pport = get_process_name_param("name", "datanodes", "port")
+        hst = get_process_setting("name", "datanodes", "host")
+        pport = get_process_setting("name", "datanodes", "port")
         response = requests.get("http://" + hst + ":" + pport + "/jmx?qry=Hadoop:service=NameNode,name=NameNodeInfo")
     except requests.exceptions.RequestException as e:
         return jsonify({"service_name": "datanodes", "status": "down"})
@@ -135,8 +143,8 @@ def get_hbase():
     hst = ""
     pport = ""
     try:
-        hst = get_process_name_param("name", "hbase", "host")
-        pport = get_process_name_param("name", "hbase", "port")
+        hst = get_process_setting("name", "hbase", "host")
+        pport = get_process_setting("name", "hbase", "port")
         response = requests.get("http://" + hst + ":" + pport + "/jmx")
     except requests.exceptions.RequestException as e:
         return jsonify({"service_name": "hbase", "status": "down"})
@@ -159,16 +167,18 @@ def get_hbase():
 
 @app.route('/kylin', methods=['GET'])
 def get_kylin():
-    header = {"Authorization": "Basic QURNSU46S1lMSU4="}
+    header = {
+        "Authorization": get_process_setting("name", "kylin", "basic_authorization")
+    }
     hst = ""
     pport = ""
     try:
-        hst = get_process_name_param("name", "kylin", "host")
-        pport = get_process_name_param("name", "kylin", "port")
+        hst = get_process_setting("name", "kylin", "host")
+        pport = get_process_setting("name", "kylin", "port")
         url = "http://" + hst + ":" + pport + "/kylin/api/user/authentication"
         response = requests.get(url, headers=header, timeout=5)
         r = response.json()
-        if r['userDetails']['username'] == 'ADMIN':
+        if r['userDetails']['username'] == get_process_setting("name", "kylin", "user_login"):
             return jsonify({"service_name": "kylin", "status": "active"})
         else:
             return jsonify({"service_name": "kylin", "status": "down", "code": response.status_code})
@@ -179,13 +189,13 @@ def get_kylin():
 
 @app.route('/all', methods=['GET'])
 def call_myself_get_all():
-    r2 = connect("http://localhost:5000/datanodes")
+    r2 = connect(get_url_process("datanodes"))
     r0 = {"services": []}
     r0["services"].append({"service_name": {"datanodes": r2}})
-    r1 = connect("http://localhost:5000/namenode")
-    r3 = connect("http://localhost:5000/hbase")
-    r4 = connect("http://localhost:5000/hive")
-    r5 = connect("http://localhost:5000/kylin")
+    r1 = connect(get_url_process("namenode"))
+    r3 = connect(get_url_process("hbase"))
+    r4 = connect(get_url_process("hive"))
+    r5 = connect(get_url_process("kylin"))
     #    r={**r1, **r2, **r3, **r4, **r5, **r6}
     r0["services"].append(r1)
     r0["services"].append(r3)
@@ -205,6 +215,6 @@ def connect(url):
 
 if __name__ == '__main__':
     app.run(
-        host=get_process_name_param("name", "listenthis", "ip"),
-        port=get_process_name_param("name", "listenthis", "port"
-    ), debug=True)
+        host=get_process_setting("name", "listenthis", "ip"),
+        port=get_process_setting("name", "listenthis", "port"
+                                 ), debug=True)
