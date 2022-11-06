@@ -59,7 +59,7 @@ def get_hive():
     hivestatus = "reconnecting"
     hive_connect()
     try:
-        df = pd.read_sql("SELECT * FROM monitor", conn)
+        df = pd.read_sql(get_process_setting("name", "hive", "topic"), conn)
     except Exception as e:
         HIVE_DISCONNECTED = True
         return jsonify({"service_name": "hive", "status": "down", "log": hivestatus})
@@ -97,12 +97,11 @@ def get_process():
 
 @app.route('/namenode', methods=['GET'])
 def get_namenode():
-    hst = ""
-    pport = ""
     try:
         hst = get_process_setting("name", "namenode", "host")
         pport = get_process_setting("name", "namenode", "port")
-        response = requests.get("http://" + hst + ":" + pport + "/jmx?qry=Hadoop:service=NameNode,name=NameNodeStatus")
+        ptopic = get_process_setting("name", "namenode", "topic")
+        response = requests.get( "http://" + hst + ":" + pport + ptopic )
     except requests.exceptions.RequestException as e:
         return jsonify({'namenode': {'status': 'down'}})
     namenode = response.json()
@@ -120,7 +119,8 @@ def get_datanodes():
     try:
         hst = get_process_setting("name", "datanodes", "host")
         pport = get_process_setting("name", "datanodes", "port")
-        response = requests.get("http://" + hst + ":" + pport + "/jmx?qry=Hadoop:service=NameNode,name=NameNodeInfo")
+        ptopic = get_process_setting("name", "namenode", "topic")
+        response = requests.get( "http://" + hst + ":" + pport + ptopic )
     except requests.exceptions.RequestException as e:
         return jsonify({"service_name": "datanodes", "status": "down"})
     datanodes = response.json()
@@ -145,7 +145,8 @@ def get_hbase():
     try:
         hst = get_process_setting("name", "hbase", "host")
         pport = get_process_setting("name", "hbase", "port")
-        response = requests.get("http://" + hst + ":" + pport + "/jmx")
+        ptopic = get_process_setting("name", "namenode", "topic")
+        response = requests.get( "http://" + hst + ":" + pport + ptopic )
     except requests.exceptions.RequestException as e:
         return jsonify({"service_name": "hbase", "status": "down"})
     hbase = response.json()
@@ -175,7 +176,8 @@ def get_kylin():
     try:
         hst = get_process_setting("name", "kylin", "host")
         pport = get_process_setting("name", "kylin", "port")
-        url = "http://" + hst + ":" + pport + "/kylin/api/user/authentication"
+        ptopic = get_process_setting("name", "namenode", "topic")
+        url = "http://" + hst + ":" + pport + ptopic
         response = requests.get(url, headers=header, timeout=5)
         r = response.json()
         if r['userDetails']['username'] == get_process_setting("name", "kylin", "user_login"):

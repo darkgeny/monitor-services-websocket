@@ -3,31 +3,36 @@
     "name": "listenthis",
     "host": "locahost",
     "ip": "0.0.0.0",
-    "port": "5000"
+    "port": "5000",
+    "topic": ""
   },
   {
     "name": "hive",
     "host": "bdata2",
     "ip": "",
-    "port": "10000"
+    "port": "10000",
+    "topic": "SELECT * FROM monitor"
   },
   {
     "name": "namenode",
     "host": "bdata1",
     "ip": "",
-    "port": "9870"
+    "port": "9870",
+    "topic": "/jmx?qry=Hadoop:service=NameNode,name=NameNodeStatus"
   },
   {
     "name": "datanodes",
     "host": "bdata1",
     "ip": "",
-    "port": "9870"
+    "port": "9870",
+    "topic": "/jmx?qry=Hadoop:service=NameNode,name=NameNodeInfo"
   },
   {
     "name": "hbase",
     "host": "bdata4",
     "ip": "",
-    "port": "16010"
+    "port": "16010",
+    "topic: "/jmx"
   },
   {
     "name": "kylin",
@@ -36,6 +41,7 @@
     "port": "7070",
     "user_login": "ADMIN",
     "user_password": "KYLIN",
-    "basic_authorization" : "QURNSU46S1lMSU4="
+    "basic_authorization" : "QURNSU46S1lMSU4=",
+    "topic": "/kylin/api/user/authentication"
   }
 ]
