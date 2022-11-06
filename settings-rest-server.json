@@ -35,6 +35,7 @@
     "ip": "",
     "port": "7070",
     "user_login": "ADMIN",
+    "user_password": "KYLIN",
     "basic_authorization" : "QURNSU46S1lMSU4="
   }
 ]
