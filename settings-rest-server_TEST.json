@@ -1,0 +1,47 @@
+[
+  {
+    "name": "listenthis",
+    "host": "locahost",
+    "ip": "0.0.0.0",
+    "port": "5000",
+    "topic": ""
+  },
+  {
+    "name": "hive",
+    "host": "localhost",
+    "ip": "",
+    "port": "42001",
+    "topic": "/status?name=hive"
+  },
+  {
+    "name": "namenode",
+    "host": "localhost",
+    "ip": "",
+    "port": "42001",
+    "topic": "/status?name=namenode"
+  },
+  {
+    "name": "datanodes",
+    "host": "localhost",
+    "ip": "",
+    "port": "42001",
+    "topic": "/status?name=datanodes"
+  },
+  {
+    "name": "hbase",
+    "host": "localhost",
+    "ip": "",
+    "port": "42001",
+    "topic": "/status?name=hbase"
+  },
+  {
+    "name": "kylin",
+    "host": "localhost",
+    "ip": "",
+    "port": "42001",
+    "user_login": "ADMIN",
+    "user_password": "KYLIN",
+    "basic_authorization" : "QURNSU46S1lMSU4=",
+    "topic": "/status?name=kylin"
+  }
+]

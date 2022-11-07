@@ -1,0 +1,22 @@
+[
+  {
+    "name": "hive",
+    "status": "up"
+  },
+  {
+    "name": "namenode",
+    "status": "up"
+  },
+  {
+    "name": "datanodes",
+    "status": "up"
+  },
+  {
+    "name": "hbase",
+    "status": "down"
+  },
+  {
+    "name": "kylin",
+    "status": "down"
+  }
+]
