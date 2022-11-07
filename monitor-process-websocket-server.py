@@ -19,13 +19,19 @@ settings = json.load(open('settings-websocket-server.json', 'r'))
 def get_process_setting(paramname, filterby, valueofthis):
     return list(filter(lambda x: x[paramname] == filterby, settings))[0][valueofthis]
 
+# __TEST_ON_SIMULATOR_REST_SERVICES (port 42001)
+__TEST_OSRS = True
 
 def get_url_process(pname):
+    if __TEST_OSRS:
+        tpic = "/status?name=" + pname
+    else:
+        tpic = pname
     return "http://" \
            + get_process_setting("name", "restserver", "host") \
            + ":" \
            + get_process_setting("name", "restserver", "port") \
-           + "/" + pname
+           + tpic
 
 
 async def get_status_all():
