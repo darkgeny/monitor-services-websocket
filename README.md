@@ -5,3 +5,4 @@ are 3 servers:
 <li>a rest-test server simulator, by setting __TEST_OSRS to True
 <li>a websocket server (consumer): the client call it by ws:// connections (<- angular)
 </ul>
+see lasts branches
