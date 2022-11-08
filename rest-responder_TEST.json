@@ -1,5 +1,17 @@
 [
   {
+    "name": "alive",
+    "status": "down",
+    "services": {
+      "name": "hive",
+      "status": "up"
+    }
+  },
+  {
+    "name": "all",
+    "status": "up"
+  },
+  {
     "name": "hive",
     "status": "up"
   },
@@ -17,6 +29,6 @@
   },
   {
     "name": "kylin",
-    "status": "down"
+    "status": "up"
   }
 ]

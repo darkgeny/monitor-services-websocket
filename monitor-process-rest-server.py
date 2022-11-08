@@ -19,8 +19,11 @@ warnings.filterwarnings('ignore')
 HIVE_DISCONNECTED = True
 conn = ""
 
+__LAST_CHECK_ALL =""
+
 app = Flask(__name__)
 
+# __TEST_ON_SIMULATOR_REST_SERVICES (wil connect to rest-test:42001)
 __TESTING_MODE_ = True
 
 if __TESTING_MODE_:
@@ -184,6 +187,26 @@ def get_datanodes():
         return jsonify(res)
 
 
+@app.route('/alive', methods=['GET'])
+def alive():
+    try:
+        hst = get_process_setting("name", "alive", "host")
+        pport = get_process_setting("name", "alive", "port")
+        ptopic = get_process_setting("name", "alive", "topic")
+        print("request:","http://" + hst + ":" + pport + ptopic)
+        response = requests.get( "http://" + hst + ":" + pport + ptopic )
+    except requests.exceptions.RequestException as e:
+        print("requests.exceptions.RequestException:",e)
+        return jsonify({'alive': {'status': 'down'}})
+    alive = response.json()
+    try:
+        j = jsonify({"service_name": "alive", "status": alive['alive']['status']})
+        return j
+    except Exception as e:
+        print("exception:",e)
+        return jsonify({'alive': {'status': 'down'}})
+
+
 @app.route('/hbase', methods=['GET'])
 def get_hbase():
     hst = ""
@@ -252,6 +275,34 @@ def get_kylin():
 
 @app.route('/all', methods=['GET'])
 def call_myself_get_all():
+    global __LAST_CHECK_ALL
+    r0 = {"services": []}
+    r1 = connect(get_url_process("namenode"))
+#    r2 = connect(get_url_process("datanodes"))
+#    r3 = connect(get_url_process("hbase"))
+#    r4 = connect(get_url_process("hive"))
+#    r5 = connect(get_url_process("kylin"))
+#    r6 = connect(get_url_process("alive"))
+    r0["services"].append(r1)
+#    r0["services"].append({"service_name": {"datanodes": r2}})
+#    r0["services"].append(r3)
+#    r0["services"].append(r4)
+#    r0["services"].append(r5)
+#    r0["services"].append(r6)
+    last = jsonify({"service_name": "all", "status": "up", "services": r0["services"]})
+
+    data = json.loads(last.json)
+    dataframe = pd.DataFrame.from_dict(str(data))  # convert json to dataframe
+    print("dataframe:", dataframe)
+
+#    print("last:", str(last.json()))
+#    print("last:", str(__LAST_CHECK_ALL.json()))
+    if __LAST_CHECK_ALL == last:
+        return ""
+    else:
+        __LAST_CHECK_ALL = last
+        return last
+"""
     r2 = connect(get_url_process("datanodes"))
     r0 = {"services": []}
     r0["services"].append({"service_name": {"datanodes": r2}})
@@ -266,7 +317,7 @@ def call_myself_get_all():
     r0["services"].append(r5)
     r = r0
     return jsonify([r])
-
+"""
 
 def connect(url):
     try:

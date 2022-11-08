@@ -9,6 +9,6 @@
     "name": "restserver",
     "host": "localhost",
     "ip": "127.0.0.1",
-    "port": "42001"
+    "port": "5000"
   }
 ]

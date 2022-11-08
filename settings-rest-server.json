@@ -1,7 +1,7 @@
 [
   {
     "name": "listenthis",
-    "host": "locahost",
+    "host": "localhost",
     "ip": "0.0.0.0",
     "port": "5000",
     "topic": ""

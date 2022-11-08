@@ -11,7 +11,8 @@ websocket_clients = set()
 ws = ""
 
 monitor_json = ""
-cmd = "kylin"
+cmd_default = "alive"
+cmd = cmd_default
 
 settings = json.load(open('settings-websocket-server.json', 'r'))
 
@@ -19,19 +20,13 @@ settings = json.load(open('settings-websocket-server.json', 'r'))
 def get_process_setting(paramname, filterby, valueofthis):
     return list(filter(lambda x: x[paramname] == filterby, settings))[0][valueofthis]
 
-# __TEST_ON_SIMULATOR_REST_SERVICES (port 42001)
-__TEST_OSRS = True
 
 def get_url_process(pname):
-    if __TEST_OSRS:
-        tpic = "/status?name=" + pname
-    else:
-        tpic = pname
     return "http://" \
            + get_process_setting("name", "restserver", "host") \
            + ":" \
            + get_process_setting("name", "restserver", "port") \
-           + tpic
+           + '/' + pname
 
 
 async def get_status_all():
@@ -47,7 +42,9 @@ async def connect(url):
         return jsonify({'connection': 'failed' + str(e)})
     return response.json()
 
-
+ # observer on received "raw_message"
+ # emitter on command to send
+ # continuos sending: alive status
 async def handle_socket_connection(websocket, path):
     global monitor_json, cmd
     monitor_json = ""
@@ -90,10 +87,10 @@ async def broadcast_monitor_services(loop):
             await asyncio.sleep(2)
             # response = requests.get("http://localhost:5000/kylin")
             if cmd == "":
-                cmd = "kylin"
+                cmd = cmd_default
             print("cmd:", cmd)
             url = get_url_process("") + cmd
-            cmd = "kylin"
+            cmd = cmd_default
             print("url:", url)
             try:
                 response = requests.get(url)

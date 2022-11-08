@@ -1,38 +1,58 @@
 [
   {
     "name": "listenthis",
-    "host": "locahost",
+    "host": "localhost",
     "ip": "0.0.0.0",
     "port": "5000",
     "topic": ""
+  },
+  {
+    "name": "alive",
+    "host": "localhost",
+    "ip": "",
+    "port": "42001",
+    "topic": "/status?name=alive",
+    "laststatus": "up"
+  },
+  {
+    "name": "ping",
+    "host": "localhost",
+    "ip": "",
+    "port": "42001",
+    "topic": "/status?name=hive",
+    "laststatus": ""
   },
   {
     "name": "hive",
     "host": "localhost",
     "ip": "",
     "port": "42001",
-    "topic": "/status?name=hive"
+    "topic": "/status?name=hive",
+    "laststatus": ""
   },
   {
     "name": "namenode",
     "host": "localhost",
     "ip": "",
     "port": "42001",
-    "topic": "/status?name=namenode"
+    "topic": "/status?name=namenode",
+    "laststatus": ""
   },
   {
     "name": "datanodes",
     "host": "localhost",
     "ip": "",
     "port": "42001",
-    "topic": "/status?name=datanodes"
+    "topic": "/status?name=datanodes",
+    "laststatus": ""
   },
   {
     "name": "hbase",
     "host": "localhost",
     "ip": "",
     "port": "42001",
-    "topic": "/status?name=hbase"
+    "topic": "/status?name=hbase",
+    "laststatus": ""
   },
   {
     "name": "kylin",
@@ -42,6 +62,7 @@
     "user_login": "ADMIN",
     "user_password": "KYLIN",
     "basic_authorization" : "QURNSU46S1lMSU4=",
-    "topic": "/status?name=kylin"
+    "topic": "/status?name=kylin",
+    "laststatus": ""
   }
 ]
