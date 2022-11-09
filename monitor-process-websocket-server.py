@@ -29,9 +29,9 @@ def get_url_process(pname):
            + '/' + pname
 
 
-async def get_status_all():
-    r = await connect(get_url_process("all"))
-    return jsonify(r)
+#async def get_status_all():
+#    r = await connect(get_url_process("all"))
+#    return jsonify(r)
 
 
 async def connect(url):
@@ -51,6 +51,7 @@ async def handle_socket_connection(websocket, path):
     """Handles the whole lifecycle of each client's websocket connection."""
     websocket_clients.add(websocket)
     print(f'New connection from: {websocket.remote_address} ({len(websocket_clients)} total)')
+    cmd="all"
     try:
         # This loop will keep listening on the socket until its closed. 
         async for raw_message in websocket:
@@ -90,8 +91,8 @@ async def broadcast_monitor_services(loop):
                 cmd = cmd_default
             print("cmd:", cmd)
             url = get_url_process("") + cmd
-            cmd = cmd_default
             print("url:", url)
+            cmd = cmd_default
             try:
                 response = requests.get(url)
             except Exception as e:
@@ -99,6 +100,7 @@ async def broadcast_monitor_services(loop):
             try:
                 temp = str(response.json())
             except Exception as e:
+#no                temp = ""
                 print("json error (response):", e)
             if monitor_json == temp:
                 is_different = False
@@ -114,6 +116,11 @@ async def broadcast_monitor_services(loop):
             try:
                 for c in websocket_clients:
                     print(f'Sending socket [{id(c)}]')
+                    try:
+                        if response.json()["services"]:
+                            print("ci sta services:", str(response.json()["services"]))
+                    except Exception:
+                        print("non ci sta services")
                     await asyncio.ensure_future(
                         c.send('{"source": "' + str(id(c)) + '","content":"' + str(response.json()) + '"}'))
                     print(f"response:" + monitor_json)

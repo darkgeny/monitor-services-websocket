@@ -1,15 +1,11 @@
 [
   {
     "name": "alive",
-    "status": "down",
+    "status": "up",
     "services": {
       "name": "hive",
       "status": "up"
     }
-  },
-  {
-    "name": "all",
-    "status": "up"
   },
   {
     "name": "hive",
@@ -25,7 +21,7 @@
   },
   {
     "name": "hbase",
-    "status": "down"
+    "status": "up"
   },
   {
     "name": "kylin",
